@@ -58,7 +58,7 @@ public class PlayerActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_player);
 
-    playerView = (SimpleExoPlayerView) findViewById(R.id.video_view);
+    playerView = findViewById(R.id.video_view);
   }
 
   @Override
@@ -121,10 +121,11 @@ public class PlayerActivity extends AppCompatActivity {
   }
 
   private MediaSource buildMediaSource(Uri uri) {
-    DataSource.Factory dataSourceFactory = new DefaultHttpDataSourceFactory("ua", BANDWIDTH_METER);
     DashChunkSource.Factory dashChunkSourceFactory = new DefaultDashChunkSource.Factory(
-        dataSourceFactory);
-    return new DashMediaSource(uri, dataSourceFactory, dashChunkSourceFactory, null, null);
+        new DefaultHttpDataSourceFactory("ua", BANDWIDTH_METER));
+    DataSource.Factory manifestDataSourceFactory = new DefaultHttpDataSourceFactory("ua");
+    return new DashMediaSource.Factory(dashChunkSourceFactory, manifestDataSourceFactory).
+        createMediaSource(uri);
   }
 
   @SuppressLint("InlinedApi")

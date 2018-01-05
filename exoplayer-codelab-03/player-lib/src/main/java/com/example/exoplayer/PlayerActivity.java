@@ -30,6 +30,7 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioRendererEventListener;
@@ -73,7 +74,7 @@ public class PlayerActivity extends AppCompatActivity {
     setContentView(R.layout.activity_player);
 
     componentListener = new ComponentListener();
-    playerView = (SimpleExoPlayerView) findViewById(R.id.video_view);
+    playerView = findViewById(R.id.video_view);
   }
 
   @Override
@@ -118,8 +119,8 @@ public class PlayerActivity extends AppCompatActivity {
       player = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(this),
           new DefaultTrackSelector(adaptiveTrackSelectionFactory), new DefaultLoadControl());
       player.addListener(componentListener);
-      player.setVideoDebugListener(componentListener);
-      player.setAudioDebugListener(componentListener);
+      player.addVideoDebugListener(componentListener);
+      player.addAudioDebugListener(componentListener);
       playerView.setPlayer(player);
       player.setPlayWhenReady(playWhenReady);
       player.seekTo(currentWindow, playbackPosition);
@@ -134,16 +135,19 @@ public class PlayerActivity extends AppCompatActivity {
       currentWindow = player.getCurrentWindowIndex();
       playWhenReady = player.getPlayWhenReady();
       player.removeListener(componentListener);
+      player.removeVideoDebugListener(componentListener);
+      player.removeAudioDebugListener(componentListener);
       player.release();
       player = null;
     }
   }
 
   private MediaSource buildMediaSource(Uri uri) {
-    DataSource.Factory dataSourceFactory = new DefaultHttpDataSourceFactory("ua", BANDWIDTH_METER);
+    DataSource.Factory manifestDataSourceFactory = new DefaultHttpDataSourceFactory("ua");
     DashChunkSource.Factory dashChunkSourceFactory = new DefaultDashChunkSource.Factory(
-        dataSourceFactory);
-    return new DashMediaSource(uri, dataSourceFactory, dashChunkSourceFactory, null, null);
+        new DefaultHttpDataSourceFactory("ua", BANDWIDTH_METER));
+    return new DashMediaSource.Factory(dashChunkSourceFactory, manifestDataSourceFactory)
+        .createMediaSource(uri);
   }
 
   @SuppressLint("InlinedApi")
@@ -156,37 +160,23 @@ public class PlayerActivity extends AppCompatActivity {
         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
   }
 
-  private class ComponentListener implements ExoPlayer.EventListener, VideoRendererEventListener,
-      AudioRendererEventListener {
-    @Override
-    public void onTimelineChanged(Timeline timeline, Object manifest) {
-      // Do nothing.
-    }
-
-    @Override
-    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-      // Do nothing.
-    }
-
-    @Override
-    public void onLoadingChanged(boolean isLoading) {
-      // Do nothing.
-    }
+  private class ComponentListener extends Player.DefaultEventListener implements
+      VideoRendererEventListener, AudioRendererEventListener {
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
       String stateString;
       switch (playbackState) {
-        case ExoPlayer.STATE_IDLE:
+        case Player.STATE_IDLE:
           stateString = "ExoPlayer.STATE_IDLE      -";
           break;
-        case ExoPlayer.STATE_BUFFERING:
+        case Player.STATE_BUFFERING:
           stateString = "ExoPlayer.STATE_BUFFERING -";
           break;
-        case ExoPlayer.STATE_READY:
+        case Player.STATE_READY:
           stateString = "ExoPlayer.STATE_READY     -";
           break;
-        case ExoPlayer.STATE_ENDED:
+        case Player.STATE_ENDED:
           stateString = "ExoPlayer.STATE_ENDED     -";
           break;
         default:
@@ -196,85 +186,75 @@ public class PlayerActivity extends AppCompatActivity {
       Log.d(TAG, "changed state to " + stateString + " playWhenReady: " + playWhenReady);
     }
 
-    @Override
-    public void onPlayerError(ExoPlaybackException error) {
-      // Do nothing.
-    }
-
-    @Override
-    public void onPositionDiscontinuity() {
-      // Do nothing.
-    }
-
-    @Override
-    public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-      // Do nothing.
-    }
+    // Implementing VideoRendererEventListener.
 
     @Override
     public void onVideoEnabled(DecoderCounters counters) {
-
+      // Do nothing.
     }
 
     @Override
     public void onVideoDecoderInitialized(String decoderName, long initializedTimestampMs, long initializationDurationMs) {
-
+      // Do nothing.
     }
 
     @Override
     public void onVideoInputFormatChanged(Format format) {
-
+      // Do nothing.
     }
 
     @Override
     public void onDroppedFrames(int count, long elapsedMs) {
-
+      // Do nothing.
     }
 
     @Override
     public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
-
+      // Do nothing.
     }
 
     @Override
     public void onRenderedFirstFrame(Surface surface) {
-
+      // Do nothing.
     }
 
     @Override
     public void onVideoDisabled(DecoderCounters counters) {
-
+      // Do nothing.
     }
+
+    // Implementing AudioRendererEventListener.
 
     @Override
     public void onAudioEnabled(DecoderCounters counters) {
-
+      // Do nothing.
     }
 
     @Override
     public void onAudioSessionId(int audioSessionId) {
-
+      // Do nothing.
     }
 
     @Override
     public void onAudioDecoderInitialized(String decoderName, long initializedTimestampMs, long initializationDurationMs) {
-
+      // Do nothing.
     }
 
     @Override
     public void onAudioInputFormatChanged(Format format) {
-
+      // Do nothing.
     }
 
     @Override
-    public void onAudioTrackUnderrun(int bufferSize, long bufferSizeMs, long elapsedSinceLastFeedMs) {
-
+    public void onAudioSinkUnderrun(int bufferSize, long bufferSizeMs, long elapsedSinceLastFeedMs) {
+      // Do nothing.
     }
 
     @Override
     public void onAudioDisabled(DecoderCounters counters) {
-
+      // Do nothing.
     }
+
   }
 
 }

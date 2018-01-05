@@ -50,7 +50,7 @@ public class PlayerActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_player);
 
-    playerView = (SimpleExoPlayerView) findViewById(R.id.video_view);
+    playerView = findViewById(R.id.video_view);
   }
 
   @Override
@@ -109,8 +109,8 @@ public class PlayerActivity extends AppCompatActivity {
   }
 
   private MediaSource buildMediaSource(Uri uri) {
-    return new ExtractorMediaSource(uri, new DefaultHttpDataSourceFactory("exoplayer-codelab"),
-        new DefaultExtractorsFactory(), null, null);
+    return new ExtractorMediaSource.Factory(new DefaultHttpDataSourceFactory("exoplayer-codelab"))
+        .createMediaSource(uri);
   }
 
   @SuppressLint("InlinedApi")

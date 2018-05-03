@@ -32,7 +32,7 @@ import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
@@ -47,7 +47,7 @@ public class PlayerActivity extends AppCompatActivity {
   private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
 
   private SimpleExoPlayer player;
-  private SimpleExoPlayerView playerView;
+  private PlayerView playerView;
 
   private long playbackPosition;
   private int currentWindow;

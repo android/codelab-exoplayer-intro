@@ -11,7 +11,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
-* limitations under the License.
+ * limitations under the License.
  */
 package com.example.exoplayer;
 
@@ -25,16 +25,12 @@ import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.dash.DashChunkSource;
-import com.google.android.exoplayer2.source.dash.DashMediaSource;
-import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
@@ -42,9 +38,6 @@ import com.google.android.exoplayer2.util.Util;
  * A fullscreen activity to play audio or video streams.
  */
 public class PlayerActivity extends AppCompatActivity {
-
-  // bandwidth meter to measure and estimate bandwidth
-  private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
 
   private SimpleExoPlayer player;
   private PlayerView playerView;
@@ -96,17 +89,13 @@ public class PlayerActivity extends AppCompatActivity {
 
   private void initializePlayer() {
     if (player == null) {
-      // a factory to create an AdaptiveVideoTrackSelection
-      TrackSelection.Factory adaptiveTrackSelectionFactory =
-          new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
-      // let the factory create a player instance with default components
       player = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(this),
-          new DefaultTrackSelector(adaptiveTrackSelectionFactory), new DefaultLoadControl());
+              new DefaultTrackSelector(), new DefaultLoadControl());
       playerView.setPlayer(player);
       player.setPlayWhenReady(playWhenReady);
       player.seekTo(currentWindow, playbackPosition);
     }
-    MediaSource mediaSource = buildMediaSource(Uri.parse(getString(R.string.media_url_dash)));
+    MediaSource mediaSource = buildMediaSource(Uri.parse(getString(R.string.media_url_mp4)));
     player.prepare(mediaSource, true, false);
   }
 
@@ -121,21 +110,29 @@ public class PlayerActivity extends AppCompatActivity {
   }
 
   private MediaSource buildMediaSource(Uri uri) {
-    DashChunkSource.Factory dashChunkSourceFactory = new DefaultDashChunkSource.Factory(
-        new DefaultHttpDataSourceFactory("ua", BANDWIDTH_METER));
-    DataSource.Factory manifestDataSourceFactory = new DefaultHttpDataSourceFactory("ua");
-    return new DashMediaSource.Factory(dashChunkSourceFactory, manifestDataSourceFactory).
-        createMediaSource(uri);
+    // These factories are used to construct two media sources below
+    DefaultHttpDataSourceFactory dataSourceFactory =
+            new DefaultHttpDataSourceFactory("exoplayer-codelab");
+    ExtractorMediaSource.Factory extractorFactory = new ExtractorMediaSource.Factory(dataSourceFactory);
+
+    // Create a media source using the supplied URI
+    ExtractorMediaSource mediaSource1 = extractorFactory.createMediaSource(uri);
+
+    // Additionally create a media source using an MP3
+    Uri audioUri = Uri.parse(getString(R.string.media_url_mp3));
+    ExtractorMediaSource mediaSource2 = extractorFactory.createMediaSource(audioUri);
+
+    return new ConcatenatingMediaSource(mediaSource1, mediaSource2);
   }
 
   @SuppressLint("InlinedApi")
   private void hideSystemUi() {
     playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-        | View.SYSTEM_UI_FLAG_FULLSCREEN
-        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+            | View.SYSTEM_UI_FLAG_FULLSCREEN
+            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
   }
 
 }

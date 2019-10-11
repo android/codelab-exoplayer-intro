@@ -52,7 +52,7 @@ public class PlayerActivity extends AppCompatActivity {
 
   // bandwidth meter to measure and estimate bandwidth
   private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
-  private static final String TAG = "PlayerActivity";
+  private static final String TAG = PlayerActivity.class.getName();
 
   private SimpleExoPlayer player;
   private PlayerView playerView;
@@ -137,9 +137,9 @@ public class PlayerActivity extends AppCompatActivity {
   }
 
   private MediaSource buildMediaSource(Uri uri) {
-    DataSource.Factory manifestDataSourceFactory = new DefaultHttpDataSourceFactory("ua");
+    DataSource.Factory manifestDataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer-codelab");
     DashChunkSource.Factory dashChunkSourceFactory = new DefaultDashChunkSource.Factory(
-        new DefaultHttpDataSourceFactory("ua", BANDWIDTH_METER));
+        new DefaultHttpDataSourceFactory("exoplayer-codelab", BANDWIDTH_METER));
     return new DashMediaSource.Factory(dashChunkSourceFactory, manifestDataSourceFactory)
         .createMediaSource(uri);
   }

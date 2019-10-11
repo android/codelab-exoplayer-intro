@@ -137,9 +137,10 @@ public class PlayerActivity extends AppCompatActivity {
   }
 
   private MediaSource buildMediaSource(Uri uri) {
-    DataSource.Factory manifestDataSourceFactory = new DefaultHttpDataSourceFactory("ua");
+    DataSource.Factory manifestDataSourceFactory =
+        new DefaultHttpDataSourceFactory("exoplayer-codelab");
     DashChunkSource.Factory dashChunkSourceFactory = new DefaultDashChunkSource.Factory(
-        new DefaultHttpDataSourceFactory("ua", BANDWIDTH_METER));
+        new DefaultHttpDataSourceFactory("exoplayer-codelab", BANDWIDTH_METER));
     return new DashMediaSource.Factory(dashChunkSourceFactory, manifestDataSourceFactory)
         .createMediaSource(uri);
   }

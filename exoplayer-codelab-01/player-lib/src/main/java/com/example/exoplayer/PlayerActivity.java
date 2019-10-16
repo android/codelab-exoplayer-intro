@@ -11,24 +11,25 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
-* limitations under the License.
+ * limitations under the License.
  */
 package com.example.exoplayer;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
@@ -37,12 +38,11 @@ import com.google.android.exoplayer2.util.Util;
  */
 public class PlayerActivity extends AppCompatActivity {
 
-  private SimpleExoPlayer player;
   private PlayerView playerView;
-
-  private long playbackPosition;
-  private int currentWindow;
+  private SimpleExoPlayer player;
   private boolean playWhenReady = true;
+  private int currentWindow = 0;
+  private long playbackPosition = 0;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -86,15 +86,15 @@ public class PlayerActivity extends AppCompatActivity {
   }
 
   private void initializePlayer() {
-    if (player == null) {
-      player = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(this),
-          new DefaultTrackSelector(), new DefaultLoadControl());
-      playerView.setPlayer(player);
-      player.setPlayWhenReady(playWhenReady);
-      player.seekTo(currentWindow, playbackPosition);
-    }
-    MediaSource mediaSource = buildMediaSource(Uri.parse(getString(R.string.media_url_mp4)));
-    player.prepare(mediaSource, true, false);
+    player = ExoPlayerFactory.newSimpleInstance(this);
+    playerView.setPlayer(player);
+
+    Uri uri = Uri.parse(getString(R.string.media_url_mp4));
+    MediaSource mediaSource = buildMediaSource(uri);
+
+    player.setPlayWhenReady(playWhenReady);
+    player.seekTo(currentWindow, playbackPosition);
+    player.prepare(mediaSource, false, false);
   }
 
   private void releasePlayer() {
@@ -108,8 +108,9 @@ public class PlayerActivity extends AppCompatActivity {
   }
 
   private MediaSource buildMediaSource(Uri uri) {
-    return new ExtractorMediaSource.Factory(new DefaultHttpDataSourceFactory("exoplayer-codelab"))
-        .createMediaSource(uri);
+    DataSource.Factory dataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer-codelab");
+    return new ProgressiveMediaSource.Factory(dataSourceFactory)
+            .createMediaSource(uri);
   }
 
   @SuppressLint("InlinedApi")
@@ -121,5 +122,4 @@ public class PlayerActivity extends AppCompatActivity {
         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
   }
-
 }

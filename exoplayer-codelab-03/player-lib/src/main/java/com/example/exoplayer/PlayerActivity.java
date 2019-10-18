@@ -89,7 +89,9 @@ public class PlayerActivity extends AppCompatActivity {
 
   private void initializePlayer() {
     if (player == null) {
-      TrackSelector trackSelector = new DefaultTrackSelector();
+      DefaultTrackSelector trackSelector = new DefaultTrackSelector();
+      trackSelector.setParameters(
+              trackSelector.buildUponParameters().setMaxVideoSizeSd());
       player = ExoPlayerFactory.newSimpleInstance(this, trackSelector);
     }
 

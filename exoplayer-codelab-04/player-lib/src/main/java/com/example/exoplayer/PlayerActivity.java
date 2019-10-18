@@ -34,7 +34,8 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 /**
@@ -124,9 +125,9 @@ public class PlayerActivity extends AppCompatActivity {
   }
 
   private MediaSource buildMediaSource(Uri uri) {
-    DefaultHttpDataSourceFactory httpDataSourceFactory =
-            new DefaultHttpDataSourceFactory("exoplayer-codelab");
-    DashMediaSource.Factory mediaSourceFactory = new DashMediaSource.Factory(httpDataSourceFactory);
+    DataSource.Factory dataSourceFactory =
+            new DefaultDataSourceFactory(this, "exoplayer-codelab");
+    DashMediaSource.Factory mediaSourceFactory = new DashMediaSource.Factory(dataSourceFactory);
     return mediaSourceFactory.createMediaSource(uri);
   }
 

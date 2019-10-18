@@ -28,7 +28,7 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 /**
@@ -106,7 +106,8 @@ public class PlayerActivity extends AppCompatActivity {
   }
 
   private MediaSource buildMediaSource(Uri uri) {
-    DataSource.Factory dataSourceFactory = new DefaultHttpDataSourceFactory("exoplayer-codelab");
+    DataSource.Factory dataSourceFactory =
+            new DefaultDataSourceFactory(this, "exoplayer-codelab");
     return new ProgressiveMediaSource.Factory(dataSourceFactory)
             .createMediaSource(uri);
   }

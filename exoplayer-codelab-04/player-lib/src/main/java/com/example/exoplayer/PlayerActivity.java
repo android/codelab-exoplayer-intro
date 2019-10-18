@@ -97,9 +97,7 @@ public class PlayerActivity extends AppCompatActivity {
 
   private void initializePlayer() {
     if (player == null) {
-      TrackSelection.Factory adaptiveTrackSelectionFactory =
-              new AdaptiveTrackSelection.Factory();
-      TrackSelector trackSelector = new DefaultTrackSelector(adaptiveTrackSelectionFactory);
+      TrackSelector trackSelector = new DefaultTrackSelector();
       player = ExoPlayerFactory.newSimpleInstance(this, trackSelector);
     }
 

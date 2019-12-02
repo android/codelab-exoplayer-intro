@@ -14,7 +14,7 @@ limitations under the License. -->
 <resources>
   <string name="app_name">ExoPlayer code lab</string>
   <string name="player_activity_name">Media player</string>
-  <string name="media_url_mp3">https://storage.googleapis.com/exoplayer-test-media-0/play.mp3</string>
+  <string name="media_url_mp3">https://storage.googleapis.com/exoplayer-test-media-0/Jazz_In_Paris.mp3</string>
   <!-- Big Buck Bunny video provided by the Blender Foundation.
   (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org -->
   <string name="media_url_mp4">https://storage.googleapis.com/exoplayer-test-media-0/BigBuckBunny_320x180.mp4</string>

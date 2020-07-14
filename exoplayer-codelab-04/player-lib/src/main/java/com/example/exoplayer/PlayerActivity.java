@@ -24,15 +24,11 @@ import android.util.Log;
 import android.view.View;
 
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelection;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
@@ -97,10 +93,13 @@ public class PlayerActivity extends AppCompatActivity {
 
   private void initializePlayer() {
     if (player == null) {
-      DefaultTrackSelector trackSelector = new DefaultTrackSelector();
+      DefaultTrackSelector trackSelector = new DefaultTrackSelector(this);
       trackSelector.setParameters(
               trackSelector.buildUponParameters().setMaxVideoSizeSd());
-      player = ExoPlayerFactory.newSimpleInstance(this, trackSelector);
+
+      player = new SimpleExoPlayer.Builder(this)
+              .setTrackSelector(trackSelector)
+              .build();
     }
 
     playerView.setPlayer(player);

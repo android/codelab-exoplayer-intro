@@ -85,7 +85,7 @@ public class PlayerActivity extends AppCompatActivity {
   }
 
   private void initializePlayer() {
-    player = ExoPlayerFactory.newSimpleInstance(this);
+    player = new SimpleExoPlayer.Builder(this).build();
     playerView.setPlayer(player);
 
     Uri uri = Uri.parse(getString(R.string.media_url_mp4));

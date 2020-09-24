@@ -16,19 +16,16 @@
 package com.example.exoplayer;
 
 import android.annotation.SuppressLint;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 
 /**
@@ -94,12 +91,15 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     playerView.setPlayer(player);
-    Uri uri = Uri.parse(getString(R.string.media_url_dash));
-    MediaSource mediaSource = buildMediaSource(uri);
+    MediaItem mediaItem = new MediaItem.Builder()
+            .setUri(getString(R.string.media_url_dash))
+            .setMimeType(MimeTypes.APPLICATION_MPD)
+            .build();
+    player.setMediaItem(mediaItem);
 
     player.setPlayWhenReady(playWhenReady);
     player.seekTo(currentWindow, playbackPosition);
-    player.prepare(mediaSource, false, false);
+    player.prepare();
   }
 
   private void releasePlayer() {
@@ -110,13 +110,6 @@ public class PlayerActivity extends AppCompatActivity {
       player.release();
       player = null;
     }
-  }
-
-  private MediaSource buildMediaSource(Uri uri) {
-    DataSource.Factory dataSourceFactory =
-      new DefaultDataSourceFactory(this, "exoplayer-codelab");
-    DashMediaSource.Factory mediaSourceFactory = new DashMediaSource.Factory(dataSourceFactory);
-    return mediaSourceFactory.createMediaSource(uri);
   }
 
   @SuppressLint("InlinedApi")

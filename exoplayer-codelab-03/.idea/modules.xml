@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/exoplayer-codelab-03.iml" filepath="$PROJECT_DIR$/.idea/exoplayer-codelab-03.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/exoplayer-codelab-03.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/exoplayer-codelab-03.app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/player-lib/exoplayer-codelab-03.player-lib.iml" filepath="$PROJECT_DIR$/.idea/modules/player-lib/exoplayer-codelab-03.player-lib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/exoplayer-intro.exoplayer-codelab-03.iml" filepath="$PROJECT_DIR$/.idea/modules/exoplayer-intro.exoplayer-codelab-03.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/exoplayer-codelab-03.iml" filepath="$PROJECT_DIR$/exoplayer-codelab-03.iml" />
+      <module fileurl="file://$PROJECT_DIR$/player-lib/player-lib.iml" filepath="$PROJECT_DIR$/player-lib/player-lib.iml" />
     </modules>
   </component>
 </project>

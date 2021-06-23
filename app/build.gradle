@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 30
@@ -25,5 +26,5 @@ android {
 
 dependencies {
     // Switch out the code lab step to jump to different points in the code lab
-    implementation project(':exoplayer-codelab-01')
+    implementation project(':exoplayer-codelab-04')
 }

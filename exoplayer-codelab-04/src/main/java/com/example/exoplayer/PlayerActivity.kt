@@ -20,30 +20,34 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.example.exoplayer.databinding.ActivityPlayerBinding
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.util.Util
+
+private val TAG = PlayerActivity::class.java.name
 
 /**
  * A fullscreen activity to play audio or video streams.
  */
 class PlayerActivity : AppCompatActivity() {
-    private var playbackStateListener: PlaybackStateListener? = null
-    private var playerView: PlayerView? = null
+
+    private val viewBinding by lazy { ActivityPlayerBinding.inflate(layoutInflater) }
+
+    private val playbackStateListener: Player.EventListener = playbackStateListener()
     private var player: SimpleExoPlayer? = null
+
     private var playWhenReady = true
     private var currentWindow = 0
     private var playbackPosition: Long = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
-        playerView = findViewById(R.id.video_view)
-        playbackStateListener = PlaybackStateListener()
+        setContentView(viewBinding.root)
     }
 
     public override fun onStart() {
@@ -76,63 +80,64 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun initializePlayer() {
-        if (player == null) {
+        val currentPlayer = player
+        val nonNullPlayer = if (currentPlayer == null) {
             val trackSelector = DefaultTrackSelector(this)
             trackSelector.setParameters(
                 trackSelector.buildUponParameters().setMaxVideoSizeSd()
             )
-            player = SimpleExoPlayer.Builder(this)
+            SimpleExoPlayer.Builder(this)
                 .setTrackSelector(trackSelector)
                 .build()
         }
-        playerView!!.player = player
+        else currentPlayer
+
+        player = nonNullPlayer
+        viewBinding.videoView.player = nonNullPlayer
+
         val mediaItem = MediaItem.Builder()
             .setUri(getString(R.string.media_url_dash))
             .setMimeType(MimeTypes.APPLICATION_MPD)
             .build()
-        player!!.setMediaItem(mediaItem)
-        player!!.playWhenReady = playWhenReady
-        player!!.seekTo(currentWindow, playbackPosition)
-        player!!.addListener(playbackStateListener!!)
-        player!!.prepare()
+        nonNullPlayer.setMediaItem(mediaItem)
+        nonNullPlayer.playWhenReady = playWhenReady
+        nonNullPlayer.seekTo(currentWindow, playbackPosition)
+        nonNullPlayer.addListener(playbackStateListener)
+        nonNullPlayer.prepare()
     }
 
     private fun releasePlayer() {
-        if (player != null) {
-            playbackPosition = player!!.currentPosition
-            currentWindow = player!!.currentWindowIndex
-            playWhenReady = player!!.playWhenReady
-            player!!.removeListener(playbackStateListener!!)
-            player!!.release()
+        val nullablePlayer = player
+        if (nullablePlayer != null) {
+            playbackPosition = nullablePlayer.currentPosition
+            currentWindow = nullablePlayer.currentWindowIndex
+            playWhenReady = nullablePlayer.playWhenReady
+            nullablePlayer.removeListener(playbackStateListener)
+            nullablePlayer.release()
             player = null
         }
     }
 
     @SuppressLint("InlinedApi")
     private fun hideSystemUi() {
-        playerView!!.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+        viewBinding.videoView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
                 or View.SYSTEM_UI_FLAG_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
     }
+}
 
-    private inner class PlaybackStateListener : Player.EventListener {
-        override fun onPlaybackStateChanged(playbackState: Int) {
-            val stateString: String
-            stateString = when (playbackState) {
-                ExoPlayer.STATE_IDLE -> "ExoPlayer.STATE_IDLE      -"
-                ExoPlayer.STATE_BUFFERING -> "ExoPlayer.STATE_BUFFERING -"
-                ExoPlayer.STATE_READY -> "ExoPlayer.STATE_READY     -"
-                ExoPlayer.STATE_ENDED -> "ExoPlayer.STATE_ENDED     -"
-                else -> "UNKNOWN_STATE             -"
-            }
-            Log.d(TAG, "changed state to $stateString")
+private fun playbackStateListener() = object : Player.EventListener {
+    override fun onPlaybackStateChanged(playbackState: Int) {
+        val stateString: String = when (playbackState) {
+            ExoPlayer.STATE_IDLE -> "ExoPlayer.STATE_IDLE      -"
+            ExoPlayer.STATE_BUFFERING -> "ExoPlayer.STATE_BUFFERING -"
+            ExoPlayer.STATE_READY -> "ExoPlayer.STATE_READY     -"
+            ExoPlayer.STATE_ENDED -> "ExoPlayer.STATE_ENDED     -"
+            else -> "UNKNOWN_STATE             -"
         }
-    }
-
-    companion object {
-        private val TAG = PlayerActivity::class.java.name
+        Log.d(TAG, "changed state to $stateString")
     }
 }

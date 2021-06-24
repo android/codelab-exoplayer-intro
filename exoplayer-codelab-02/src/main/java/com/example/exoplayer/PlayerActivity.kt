@@ -19,24 +19,27 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.example.exoplayer.databinding.ActivityPlayerBinding
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.Util
 
 /**
  * A fullscreen activity to play audio or video streams.
  */
 class PlayerActivity : AppCompatActivity() {
-    private var playerView: PlayerView? = null
+
+    private val viewBinding by lazy { ActivityPlayerBinding.inflate(layoutInflater) }
+
     private var player: SimpleExoPlayer? = null
+
     private var playWhenReady = true
     private var currentWindow = 0
     private var playbackPosition: Long = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
-        playerView = findViewById(R.id.video_view)
+        setContentView(viewBinding.root)
     }
 
     public override fun onStart() {
@@ -69,30 +72,34 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun initializePlayer() {
-        player = SimpleExoPlayer.Builder(this).build()
-        playerView!!.player = player
+        val nonNullPlayer = SimpleExoPlayer.Builder(this).build()
+        player = nonNullPlayer
+
+        viewBinding.videoView.player = nonNullPlayer
+
         val mediaItem = MediaItem.fromUri(getString(R.string.media_url_mp4))
-        player!!.setMediaItem(mediaItem)
+        nonNullPlayer.setMediaItem(mediaItem)
         val secondMediaItem = MediaItem.fromUri(getString(R.string.media_url_mp3))
-        player!!.addMediaItem(secondMediaItem)
-        player!!.playWhenReady = playWhenReady
-        player!!.seekTo(currentWindow, playbackPosition)
-        player!!.prepare()
+        nonNullPlayer.addMediaItem(secondMediaItem)
+        nonNullPlayer.playWhenReady = playWhenReady
+        nonNullPlayer.seekTo(currentWindow, playbackPosition)
+        nonNullPlayer.prepare()
     }
 
     private fun releasePlayer() {
-        if (player != null) {
-            playbackPosition = player!!.currentPosition
-            currentWindow = player!!.currentWindowIndex
-            playWhenReady = player!!.playWhenReady
-            player!!.release()
+        val nullablePlayer = player
+        if (nullablePlayer != null) {
+            playbackPosition = nullablePlayer.currentPosition
+            currentWindow = nullablePlayer.currentWindowIndex
+            playWhenReady = nullablePlayer.playWhenReady
+            nullablePlayer.release()
             player = null
         }
     }
 
     @SuppressLint("InlinedApi")
     private fun hideSystemUi() {
-        playerView!!.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+        viewBinding.videoView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
                 or View.SYSTEM_UI_FLAG_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY

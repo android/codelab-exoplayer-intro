@@ -19,10 +19,10 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.example.exoplayer.databinding.ActivityPlayerBinding
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.util.Util
 
@@ -30,15 +30,18 @@ import com.google.android.exoplayer2.util.Util
  * A fullscreen activity to play audio or video streams.
  */
 class PlayerActivity : AppCompatActivity() {
-    private var playerView: PlayerView? = null
+
+    private val viewBinding by lazy { ActivityPlayerBinding.inflate(layoutInflater) }
+
     private var player: SimpleExoPlayer? = null
+
     private var playWhenReady = true
     private var currentWindow = 0
     private var playbackPosition: Long = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
-        playerView = findViewById(R.id.video_view)
+        setContentView(viewBinding.root)
     }
 
     public override fun onStart() {
@@ -71,39 +74,44 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun initializePlayer() {
-        if (player == null) {
+        val currentPlayer = player
+        val nonNullPlayer = if (currentPlayer == null) {
             val trackSelector = DefaultTrackSelector(this)
             trackSelector.setParameters(
                 trackSelector.buildUponParameters().setMaxVideoSizeSd()
             )
-            player = SimpleExoPlayer.Builder(this)
+            SimpleExoPlayer.Builder(this)
                 .setTrackSelector(trackSelector)
                 .build()
-        }
-        playerView!!.player = player
+        } else currentPlayer
+
+        player = nonNullPlayer
+        viewBinding.videoView.player = nonNullPlayer
+
         val mediaItem = MediaItem.Builder()
             .setUri(getString(R.string.media_url_dash))
             .setMimeType(MimeTypes.APPLICATION_MPD)
             .build()
-        player!!.setMediaItem(mediaItem)
-        player!!.playWhenReady = playWhenReady
-        player!!.seekTo(currentWindow, playbackPosition)
-        player!!.prepare()
+        nonNullPlayer.setMediaItem(mediaItem)
+        nonNullPlayer.playWhenReady = playWhenReady
+        nonNullPlayer.seekTo(currentWindow, playbackPosition)
+        nonNullPlayer.prepare()
     }
 
     private fun releasePlayer() {
-        if (player != null) {
-            playbackPosition = player!!.currentPosition
-            currentWindow = player!!.currentWindowIndex
-            playWhenReady = player!!.playWhenReady
-            player!!.release()
+        val nullablePlayer = player
+        if (nullablePlayer != null) {
+            playbackPosition = nullablePlayer.currentPosition
+            currentWindow = nullablePlayer.currentWindowIndex
+            playWhenReady = nullablePlayer.playWhenReady
+            nullablePlayer.release()
             player = null
         }
     }
 
     @SuppressLint("InlinedApi")
     private fun hideSystemUi() {
-        playerView!!.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
+        viewBinding.videoView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
                 or View.SYSTEM_UI_FLAG_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY

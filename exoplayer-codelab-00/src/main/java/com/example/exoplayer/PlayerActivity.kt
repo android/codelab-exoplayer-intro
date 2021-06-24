@@ -17,13 +17,17 @@ package com.example.exoplayer
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.exoplayer.databinding.ActivityPlayerBinding
 
 /**
  * A fullscreen activity to play audio or video streams.
  */
 class PlayerActivity : AppCompatActivity() {
+
+    private val viewBinding by lazy { ActivityPlayerBinding.inflate(layoutInflater) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_player)
+        setContentView(viewBinding.root)
     }
 }

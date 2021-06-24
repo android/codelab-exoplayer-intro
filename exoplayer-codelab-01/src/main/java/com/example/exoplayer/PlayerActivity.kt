@@ -72,27 +72,27 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun initializePlayer() {
-        val nonNullPlayer = SimpleExoPlayer.Builder(this).build()
-        player = nonNullPlayer
+        player = SimpleExoPlayer.Builder(this)
+            .build()
+            .also {
+                viewBinding.videoView.player = it
 
-        viewBinding.videoView.player = nonNullPlayer
-
-        val mediaItem = MediaItem.fromUri(getString(R.string.media_url_mp4))
-        nonNullPlayer.setMediaItem(mediaItem)
-        nonNullPlayer.playWhenReady = playWhenReady
-        nonNullPlayer.seekTo(currentWindow, playbackPosition)
-        nonNullPlayer.prepare()
+                val mediaItem = MediaItem.fromUri(getString(R.string.media_url_mp4))
+                it.setMediaItem(mediaItem)
+                it.playWhenReady = playWhenReady
+                it.seekTo(currentWindow, playbackPosition)
+                it.prepare()
+            }
     }
 
     private fun releasePlayer() {
-        val nullablePlayer = player
-        if (nullablePlayer != null) {
-            playbackPosition = nullablePlayer.currentPosition
-            currentWindow = nullablePlayer.currentWindowIndex
-            playWhenReady = nullablePlayer.playWhenReady
-            nullablePlayer.release()
-            player = null
+        player?.let {
+            playbackPosition = it.currentPosition
+            currentWindow = it.currentWindowIndex
+            playWhenReady = it.playWhenReady
+            it.release()
         }
+        player = null
     }
 
     @SuppressLint("InlinedApi")

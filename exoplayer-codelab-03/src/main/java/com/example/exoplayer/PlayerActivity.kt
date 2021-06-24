@@ -74,39 +74,34 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun initializePlayer() {
-        val currentPlayer = player
-        val nonNullPlayer = if (currentPlayer == null) {
-            val trackSelector = DefaultTrackSelector(this)
-            trackSelector.setParameters(
-                trackSelector.buildUponParameters().setMaxVideoSizeSd()
-            )
-            SimpleExoPlayer.Builder(this)
-                .setTrackSelector(trackSelector)
-                .build()
-        } else currentPlayer
-
-        player = nonNullPlayer
-        viewBinding.videoView.player = nonNullPlayer
-
-        val mediaItem = MediaItem.Builder()
-            .setUri(getString(R.string.media_url_dash))
-            .setMimeType(MimeTypes.APPLICATION_MPD)
+        val trackSelector = DefaultTrackSelector(this).apply {
+            setParameters(buildUponParameters().setMaxVideoSizeSd())
+        }
+        player = SimpleExoPlayer.Builder(this)
+            .setTrackSelector(trackSelector)
             .build()
-        nonNullPlayer.setMediaItem(mediaItem)
-        nonNullPlayer.playWhenReady = playWhenReady
-        nonNullPlayer.seekTo(currentWindow, playbackPosition)
-        nonNullPlayer.prepare()
+            .also {
+                viewBinding.videoView.player = it
+
+                val mediaItem = MediaItem.Builder()
+                    .setUri(getString(R.string.media_url_dash))
+                    .setMimeType(MimeTypes.APPLICATION_MPD)
+                    .build()
+                it.setMediaItem(mediaItem)
+                it.playWhenReady = playWhenReady
+                it.seekTo(currentWindow, playbackPosition)
+                it.prepare()
+            }
     }
 
     private fun releasePlayer() {
-        val nullablePlayer = player
-        if (nullablePlayer != null) {
-            playbackPosition = nullablePlayer.currentPosition
-            currentWindow = nullablePlayer.currentWindowIndex
-            playWhenReady = nullablePlayer.playWhenReady
-            nullablePlayer.release()
-            player = null
+        player?.let {
+            playbackPosition = it.currentPosition
+            currentWindow = it.currentWindowIndex
+            playWhenReady = it.playWhenReady
+            it.release()
         }
+        player = null
     }
 
     @SuppressLint("InlinedApi")

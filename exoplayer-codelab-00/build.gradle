@@ -1,20 +1,7 @@
-buildscript {
-    repositories {
-        jcenter()
-        google()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.2'
-    }
-}
+apply from: "${project.rootDir}/common.gradle"
 
-allprojects {
-    repositories {
-        jcenter()
-        google()
-    }
-}
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+    implementation 'androidx.appcompat:appcompat:1.2.0'
 }

@@ -1,0 +1,30 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 30
+
+    defaultConfig {
+        applicationId "com.example.exoplayercodelab"
+        minSdkVersion 16
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+	compileOptions {
+		sourceCompatibility 1.8
+		targetCompatibility 1.8
+	}
+	buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    // Switch out the code lab step to jump to different points in the code lab
+    implementation project(':exoplayer-codelab-00')
+}

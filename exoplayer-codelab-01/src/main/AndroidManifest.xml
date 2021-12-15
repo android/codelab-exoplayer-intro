@@ -26,7 +26,8 @@ limitations under the License. -->
         android:name="com.example.exoplayer.PlayerActivity"
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
         android:label="@string/player_activity_name"
-        android:theme="@style/PlayerTheme">
+        android:theme="@style/PlayerTheme"
+        android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>

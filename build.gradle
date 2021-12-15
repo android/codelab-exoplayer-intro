@@ -1,26 +1,26 @@
 buildscript {
     project.ext {
-        compileSdkVersion = 30
+        compileSdkVersion = 31
         minSdkVersion = 16
-        targetSdkVersion = 30
+        targetSdkVersion = 31
         buildToolsVersion = "30.0.3"
 
-        kotlin_version = "1.5.10"
+        kotlin_version = "1.6.0"
     }
 
     repositories {
-        jcenter()
+        mavenCentral()
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.2'
+        classpath 'com.android.tools.build:gradle:7.0.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 allprojects {
     repositories {
-        jcenter()
+        mavenCentral()
         google()
     }
 }

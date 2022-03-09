@@ -19,10 +19,13 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.example.exoplayer.databinding.ActivityPlayerBinding
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.util.Util
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.common.util.Util
+import androidx.media3.common.MediaItem
 
 /**
  * A fullscreen activity to play audio or video streams.
@@ -33,10 +36,10 @@ class PlayerActivity : AppCompatActivity() {
         ActivityPlayerBinding.inflate(layoutInflater)
     }
 
-    private var player: SimpleExoPlayer? = null
+    private var player: ExoPlayer? = null
 
     private var playWhenReady = true
-    private var currentWindow = 0
+    private var currentItem = 0
     private var playbackPosition = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,15 +77,15 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun initializePlayer() {
-        player = SimpleExoPlayer.Builder(this)
+        player = ExoPlayer.Builder(this)
             .build()
             .also { exoPlayer ->
                 viewBinding.videoView.player = exoPlayer
 
-                val mediaItem = MediaItem.fromUri(getString(R.string.media_url_mp3))
+                val mediaItem = MediaItem.fromUri(getString(R.string.media_url_mp4))
                 exoPlayer.setMediaItem(mediaItem)
                 exoPlayer.playWhenReady = playWhenReady
-                exoPlayer.seekTo(currentWindow, playbackPosition)
+                exoPlayer.seekTo(currentItem, playbackPosition)
                 exoPlayer.prepare()
             }
     }
@@ -90,7 +93,7 @@ class PlayerActivity : AppCompatActivity() {
 private fun releasePlayer() {
     player?.run {
         playbackPosition = this.currentPosition
-        currentWindow = this.currentWindowIndex
+        currentItem = this.currentMediaItemIndex
         playWhenReady = this.playWhenReady
         release()
     }
@@ -99,11 +102,10 @@ private fun releasePlayer() {
 
     @SuppressLint("InlinedApi")
     private fun hideSystemUi() {
-        viewBinding.videoView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, viewBinding.videoView).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
     }
 }

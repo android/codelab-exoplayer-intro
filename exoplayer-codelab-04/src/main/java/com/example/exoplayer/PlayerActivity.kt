@@ -105,12 +105,12 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun releasePlayer() {
-        player?.run {
-            playbackPosition = this.currentPosition
-            currentItem = this.currentMediaItemIndex
-            playWhenReady = this.playWhenReady
-            removeListener(playbackStateListener)
-            release()
+        player?.let { exoPlayer ->
+            playbackPosition = exoPlayer.currentPosition
+            currentItem = exoPlayer.currentMediaItemIndex
+            playWhenReady = exoPlayer.playWhenReady
+            exoPlayer.removeListener(playbackStateListener)
+            exoPlayer.release()
         }
         player = null
     }

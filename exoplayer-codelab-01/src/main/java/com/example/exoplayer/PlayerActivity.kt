@@ -17,15 +17,14 @@ package com.example.exoplayer
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.example.exoplayer.databinding.ActivityPlayerBinding
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.common.util.Util
 import androidx.media3.common.MediaItem
+import androidx.media3.common.util.Util
+import androidx.media3.exoplayer.ExoPlayer
+import com.example.exoplayer.databinding.ActivityPlayerBinding
 
 /**
  * A fullscreen activity to play audio or video streams.
@@ -90,22 +89,23 @@ class PlayerActivity : AppCompatActivity() {
             }
     }
 
-private fun releasePlayer() {
-    player?.let { exoPlayer ->
-        playbackPosition = exoPlayer.currentPosition
-        currentItem = exoPlayer.currentMediaItemIndex
-        playWhenReady = exoPlayer.playWhenReady
-        exoPlayer.release()
+    private fun releasePlayer() {
+        player?.let { exoPlayer ->
+            playbackPosition = exoPlayer.currentPosition
+            currentItem = exoPlayer.currentMediaItemIndex
+            playWhenReady = exoPlayer.playWhenReady
+            exoPlayer.release()
+        }
+        player = null
     }
-    player = null
-}
 
     @SuppressLint("InlinedApi")
     private fun hideSystemUi() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         WindowInsetsControllerCompat(window, viewBinding.videoView).let { controller ->
             controller.hide(WindowInsetsCompat.Type.systemBars())
-            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
 }

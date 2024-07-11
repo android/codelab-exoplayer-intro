@@ -24,12 +24,12 @@ import com.example.exoplayer.databinding.ActivityPlayerBinding
  */
 class PlayerActivity : AppCompatActivity() {
 
-    private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
-        ActivityPlayerBinding.inflate(layoutInflater)
-    }
+  private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
+    ActivityPlayerBinding.inflate(layoutInflater)
+  }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(viewBinding.root)
-    }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(viewBinding.root)
+  }
 }
